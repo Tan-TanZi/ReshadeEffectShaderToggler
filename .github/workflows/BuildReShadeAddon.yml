@@ -1,0 +1,111 @@
+# 工作流名称：在 GitHub Actions 页面上显示的名称
+name: BuildReShadeAddon
+
+# 触发条件：当代码推送到 main 或 master 分支、发起 PR、或手动触发时运行
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:  # 允许在 GitHub 网页上手动点击运行
+
+# 环境变量：在整个工作流中都可以使用
+env:
+  # 解决方案文件的路径（相对于仓库根目录）
+  SOLUTION_PATH: src/ReshadeEffectShaderToggler.sln
+  # 构建配置：Release（优化，无调试信息）或 Debug
+  CONFIGURATION: Release
+
+# 作业定义：一个名为 build 的作业，运行在最新的 Windows 环境
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      # ========== 步骤1：检出代码 ==========
+      - name: Checkout code
+        uses: actions/checkout@v4   # 使用官方 checkout action，拉取仓库代码
+        with:
+          submodules: 'recursive'   # 同时拉取子模块（如 deps 目录下的依赖）
+
+      # ========== 步骤2：添加 MSBuild 到 PATH ==========
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2  # 自动配置 Visual Studio 的 MSBuild 环境
+
+      # ========== 步骤3：构建依赖库 libMinHook ==========
+      # 说明：libMinHook 是主项目依赖的静态库，需要先生成。
+      # 注意：该项目的输出路径可能与主项目期望的路径不一致，后续步骤会修正。
+      - name: Build libMinHook
+        run: |
+          # 检查 libMinHook.vcxproj 文件的位置（deps 或 edps 目录）
+          if (Test-Path "deps/libMinHook/libMinHook.vcxproj") {
+            msbuild deps/libMinHook/libMinHook.vcxproj /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }}
+          } elseif (Test-Path "edps/libMinHook/libMinHook.vcxproj") {
+            msbuild edps/libMinHook/libMinHook.vcxproj /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }}
+          } else {
+            Write-Error "libMinHook.vcxproj not found"
+            exit 1
+          }
+
+      # ========== 步骤4：复制 libMinHook.lib 到主项目期望的路径 ==========
+      # 背景：主项目 ShaderToggler.vcxproj 中链接器配置的库路径是 deps\libMinHook\x64\Release\libMinHook.lib
+      # 但 libMinHook 项目默认输出到 deps\libMinHook\bin\x64\Release\libMinHook.lib（路径不同）
+      # 本步骤将搜索生成的 .lib 文件，并复制到主项目期望的位置（如果已存在则跳过，避免自复制）
+      - name: Copy libMinHook.lib to expected path
+        run: |
+          # 递归搜索整个工作区，找到第一个 libMinHook.lib 文件
+          $foundLib = Get-ChildItem -Path . -Recurse -Filter "libMinHook.lib" | Select-Object -First 1
+          if (-not $foundLib) {
+            Write-Error "libMinHook.lib not found after build"
+            exit 1
+          }
+          $source = $foundLib.FullName          # 源文件的完整绝对路径
+          $destDir = "deps\libMinHook\x64\Release"   # 目标目录（相对路径）
+          
+          # 构建目标文件的绝对路径，以便与源路径进行准确比较
+          # 如果目标目录不存在，则创建并获取其绝对路径
+          if (-not (Test-Path $destDir)) {
+            New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+          }
+          $destFile = Join-Path (Resolve-Path $destDir) "libMinHook.lib"
+          
+          Write-Host "Source: $source"
+          Write-Host "Dest:   $destFile"
+          
+          # 如果源和目标路径完全相同（例如文件已经位于正确位置），则跳过复制，避免“Cannot overwrite itself”错误
+          if ($source -eq $destFile) {
+            Write-Host "Source and destination are the same, skipping copy"
+          } else {
+            Copy-Item -Path $source -Destination $destFile -Force
+            Write-Host "Copied to $destFile"
+          }
+
+      # ========== 步骤5：构建主项目（生成 .addon64） ==========
+      # 此时 libMinHook.lib 已经位于链接器期望的位置，可以成功链接
+      - name: Build main project (x64)
+        run: |
+          # 使用 MSBuild 编译解决方案，指定平台 x64，配置 Release
+          msbuild ${{ env.SOLUTION_PATH }} /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }}
+
+      # ========== 步骤6：查找并准备最终的 .addon64 文件 ==========
+      # 主项目链接器直接输出了 ReshadeEffectShaderToggler.addon64（不是 .dll）
+      - name: Locate and prepare addon file
+        run: |
+          # 递归搜索工作区，找到第一个 .addon64 文件
+          $addon = Get-ChildItem -Path . -Recurse -Filter "*.addon64" | Select-Object -First 1
+          if (-not $addon) {
+            Write-Error "No .addon64 file found after build"
+            exit 1
+          }
+          # 将找到的文件复制到工作区根目录，并统一命名为 ReshadeEffectShaderToggler.addon64
+          Copy-Item $addon.FullName -Destination "ReshadeEffectShaderToggler.addon64" -Force
+          Write-Host "Prepared: ReshadeEffectShaderToggler.addon64"
+
+      # ========== 步骤7：上传构建产物（Artifact） ==========
+      # 这样在 Actions 运行完成后，可以下载到最终的 .addon64 文件
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReShadeAddon                    # 下载的压缩包名称
+          path: ReshadeEffectShaderToggler.addon64   # 要上传的文件
+          if-no-files-found: error              # 如果文件不存在，则标记该步骤失败
