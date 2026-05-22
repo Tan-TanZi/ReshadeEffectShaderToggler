@@ -1,0 +1,48 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: MSBuild
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  SOLUTION_FILE_PATH: src/ReshadeEffectShaderToggler.sln
+  BUILD_CONFIGURATION: Release
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Build x64
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /m /property:Platform=x64 /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+      
+    - name: Build x86
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /m /property:Platform=x86 /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+
+    - name: Upload compiled files
+      uses: actions/upload-artifact@v3
+      with:
+        name: CompiledAddons
+        path: |
+          src/x64/Release/ReshadeEffectShaderToggler.dll
+          src/x86/Release/ReshadeEffectShaderToggler.dll
