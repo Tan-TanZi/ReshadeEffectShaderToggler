@@ -1,4 +1,5 @@
 name: get_dll
+
 on:
   push:
     branches: [ "main", "master" ]
@@ -35,7 +36,7 @@ jobs:
             exit 1
           }
 
-      # 2. 搜索 libMinHook.lib 并复制到主项目期望的位置（如果不同）
+      # 2. 搜索 libMinHook.lib 并复制到主项目期望位置（避免自复制）
       - name: Copy libMinHook.lib to expected path
         run: |
           $foundLib = Get-ChildItem -Path . -Recurse -Filter "libMinHook.lib" | Select-Object -First 1
@@ -45,15 +46,20 @@ jobs:
           }
           $source = $foundLib.FullName
           $destDir = "deps\libMinHook\x64\Release"
-          $destFile = Join-Path $destDir "libMinHook.lib"
+          # 构建绝对路径的目标文件
+          $destFile = Resolve-Path -Path $destDir -ErrorAction SilentlyContinue | Join-Path -ChildPath "libMinHook.lib"
+          if (-not $destFile) {
+            # 如果目录不存在，则创建后手动构建绝对路径
+            New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+            $destFile = Join-Path (Get-Item $destDir).FullName "libMinHook.lib"
+          }
           Write-Host "Source: $source"
           Write-Host "Dest:   $destFile"
           if ($source -eq $destFile) {
             Write-Host "Source and destination are the same, skipping copy"
           } else {
-            New-Item -ItemType Directory -Force -Path $destDir | Out-Null
-            Copy-Item -Path $source -Destination $destDir -Force
-            Write-Host "Copied libMinHook.lib to $destDir"
+            Copy-Item -Path $source -Destination $destFile -Force
+            Write-Host "Copied to $destFile"
           }
 
       # 3. 构建主项目
@@ -61,7 +67,7 @@ jobs:
         run: |
           msbuild ${{ env.SOLUTION_PATH }} /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }}
 
-      # 4. 查找生成的 .addon64 文件
+      # 4. 查找并准备 .addon64 文件
       - name: Locate and prepare addon file
         run: |
           $addon = Get-ChildItem -Path . -Recurse -Filter "*.addon64" | Select-Object -First 1
