@@ -1,0 +1,72 @@
+name: get_dll
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:   # 允许手动触发
+
+env:
+  SOLUTION_PATH: src/ReshadeEffectShaderToggler.sln
+  CONFIGURATION: Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      # 可选：确认项目配置为 DynamicLibrary（如果不是，编译将不会生成 DLL）
+      - name: Check project configuration type
+        run: |
+          $vcxproj = Get-ChildItem -Path src -Filter "*.vcxproj" -Recurse | Select-Object -First 1
+          if ($vcxproj) {
+            $content = Get-Content $vcxproj.FullName -Raw
+            if ($content -match '<ConfigurationType>([^<]+)</ConfigurationType>') {
+              Write-Host "Current ConfigurationType: $($matches[1])"
+              if ($matches[1] -ne 'DynamicLibrary') {
+                Write-Host "::warning::Project is not set to DynamicLibrary (found $($matches[1])). DLL may not be generated."
+              }
+            }
+          }
+
+      - name: Build x64 (64-bit addon)
+        run: |
+          msbuild ${{ env.SOLUTION_PATH }} /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }} /p:OutDir=.\bin\x64\Release\
+
+      - name: Build x86 (32-bit addon) - optional
+        run: |
+          msbuild ${{ env.SOLUTION_PATH }} /m /p:Platform=x86 /p:Configuration=${{ env.CONFIGURATION }} /p:OutDir=.\bin\x86\Release\
+
+      - name: Locate and prepare addon files
+        run: |
+          # 查找所有 .dll 文件（通常名为 ReshadeEffectShaderToggler.dll）
+          $dlls = Get-ChildItem -Path . -Recurse -Filter "*.dll" | Where-Object { $_.Name -like "*ReshadeEffectShaderToggler*" -or $_.Name -like "*Rshield*" }
+          if ($dlls.Count -eq 0) {
+            Write-Error "No matching DLL found!"
+            exit 1
+          }
+          foreach ($dll in $dlls) {
+            # 判断架构：路径包含 x64 或 Win32/x86
+            $arch = if ($dll.FullName -match "x64|X64") { "64" } elseif ($dll.FullName -match "x86|Win32|X86") { "32" } else { "" }
+            $destName = "ReshadeEffectShaderToggler.addon$arch"
+            Copy-Item $dll.FullName -Destination $destName -Force
+            Write-Host "Copied $($dll.FullName) -> $destName"
+          }
+
+      - name: Upload artifacts (addon files)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReShadeAddons
+          path: |
+            ReshadeEffectShaderToggler.addon64
+            ReshadeEffectShaderToggler.addon32
+          if-no-files-found: error
