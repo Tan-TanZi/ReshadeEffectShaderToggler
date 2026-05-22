@@ -42,3 +42,16 @@ jobs:
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /property:Platform=x86 /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+
+    - name: Find and copy all .lib files
+      run: |
+        Get-ChildItem -Path src -Recurse -Filter "*.lib" | ForEach-Object {
+          Copy-Item $_.FullName -Destination ".\$($_.Name)" -Force
+          Write-Host "Copied $($_.FullName)"
+        }
+
+    - name: Upload all static libraries
+      uses: actions/upload-artifact@v4
+      with:
+        name: StaticLibs
+        path: "*.lib"
