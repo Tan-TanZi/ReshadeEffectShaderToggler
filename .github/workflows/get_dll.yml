@@ -23,42 +23,49 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      # 1. 先单独构建 libMinHook 依赖库
-      - name: Build libMinHook (x64)
+      # 1. 构建 libMinHook（尝试常见路径）
+      - name: Build libMinHook
         run: |
-          msbuild deps/libMinHook/libMinHook.vcxproj /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }}
-
-      # 2. 将生成的 .lib 文件复制到主项目期望的位置
-      - name: Copy libMinHook.lib to expected path
-        run: |
-          $source = "deps\libMinHook\bin\x64\Release\libMinHook.lib"
-          $destDir = "deps\libMinHook\x64\Release"
-          if (Test-Path $source) {
-            New-Item -ItemType Directory -Force -Path $destDir | Out-Null
-            Copy-Item -Path $source -Destination $destDir -Force
-            Write-Host "Successfully copied libMinHook.lib to $destDir"
+          if (Test-Path "deps/libMinHook/libMinHook.vcxproj") {
+            msbuild deps/libMinHook/libMinHook.vcxproj /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }}
+          } elseif (Test-Path "edps/libMinHook/libMinHook.vcxproj") {
+            msbuild edps/libMinHook/libMinHook.vcxproj /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }}
           } else {
-            Write-Error "libMinHook.lib not found at $source"
+            Write-Error "libMinHook.vcxproj not found"
             exit 1
           }
 
-      # 3. 构建主项目（此时链接器可以找到 libMinHook.lib）
+      # 2. 搜索生成的 libMinHook.lib 并复制到主项目期望位置
+      - name: Copy libMinHook.lib to expected path
+        run: |
+          $foundLib = Get-ChildItem -Path . -Recurse -Filter "libMinHook.lib" | Select-Object -First 1
+          if (-not $foundLib) {
+            Write-Error "libMinHook.lib not found after build"
+            exit 1
+          }
+          Write-Host "Found lib at: $($foundLib.FullName)"
+          $destDir = "deps\libMinHook\x64\Release"
+          New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+          Copy-Item -Path $foundLib.FullName -Destination $destDir -Force
+          Write-Host "Copied to $destDir"
+
+      # 3. 构建主项目（此时链接器可以找到 lib）
       - name: Build main project (x64)
         run: |
           msbuild ${{ env.SOLUTION_PATH }} /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }}
 
-      # 4. 查找生成的 .addon64 文件（主项目直接输出 .addon64）
+      # 4. 查找生成的 .addon64 文件
       - name: Locate and prepare addon file
         run: |
           $addon = Get-ChildItem -Path . -Recurse -Filter "*.addon64" | Select-Object -First 1
           if (-not $addon) {
-            Write-Error "No .addon64 file found after build!"
+            Write-Error "No .addon64 file found"
             exit 1
           }
           Copy-Item $addon.FullName -Destination "ReshadeEffectShaderToggler.addon64" -Force
-          Write-Host "Prepared addon: ReshadeEffectShaderToggler.addon64"
+          Write-Host "Prepared: ReshadeEffectShaderToggler.addon64"
 
-      # 5. 上传最终产物
+      # 5. 上传产物
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
