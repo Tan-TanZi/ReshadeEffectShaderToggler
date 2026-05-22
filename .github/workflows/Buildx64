@@ -1,0 +1,23 @@
+- name: Build x64
+  working-directory: src
+  run: msbuild /m /p:Platform=x64 /p:Configuration=${{env.BUILD_CONFIGURATION}} ReshadeEffectShaderToggler.sln
+
+- name: List all DLLs (debug)
+  run: Get-ChildItem -Recurse -Filter *.dll | % { $_.FullName }
+
+- name: Copy DLL to root
+  run: |
+    $dll = Get-ChildItem -Recurse -Filter "ReshadeEffectShaderToggler.dll" | Select-Object -First 1
+    if ($dll) {
+        Copy-Item $dll.FullName -Destination . -Force
+        Write-Host "Copied $($dll.FullName) to root"
+    } else {
+        Write-Error "DLL not found!"
+        exit 1
+    }
+
+- name: Upload compiled files
+  uses: actions/upload-artifact@v4
+  with:
+    name: CompiledAddons
+    path: ReshadeEffectShaderToggler.dll
