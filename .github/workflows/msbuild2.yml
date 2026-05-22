@@ -34,14 +34,8 @@ jobs:
       working-directory: src
       run: msbuild /m /property:Platform=x64 /p:Configuration=${{env.BUILD_CONFIGURATION}} ReshadeEffectShaderToggler.sln
 
-    - name: Build x86
-      working-directory: src
-      run: msbuild /m /property:Platform=x86 /p:Configuration=${{env.BUILD_CONFIGURATION}} ReshadeEffectShaderToggler.sln
-
     - name: Upload compiled files
       uses: actions/upload-artifact@v4
       with:
         name: CompiledAddons
-        path: |
-          src/x64/Release/ReshadeEffectShaderToggler.dll
-          src/x86/Release/ReshadeEffectShaderToggler.dll
+        path: src/**/ReshadeEffectShaderToggler.dll
