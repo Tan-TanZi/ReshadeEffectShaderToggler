@@ -387,7 +387,7 @@ static void DisplayRenderTargets(AddonImGui::AddonUIData& instance,
                 ImGui::TableNextRow();
 
                 ImGui::TableNextColumn();
-                ImGui::Text("Binding");
+                ImGui::Text("绑定");
                 ImGui::TableNextColumn();
                 ImGui::Text("%u", group->getRenderSRVDescriptorIndex());
                 ImGui::SameLine();
@@ -414,7 +414,7 @@ static void DisplayRenderTargets(AddonImGui::AddonUIData& instance,
                 group->setRenderToResourceViews(false);
 
                 ImGui::TableNextColumn();
-                ImGui::Text("Render target index");
+                ImGui::Text("渲染目标索引");
                 ImGui::TableNextColumn();
                 ImGui::Text("%u", group->getRenderTargetIndex());
                 ImGui::SameLine();
@@ -434,7 +434,7 @@ static void DisplayRenderTargets(AddonImGui::AddonUIData& instance,
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
 
-                ImGui::Text("Invocation location");
+                ImGui::Text("调用位置");
                 ImGui::TableNextColumn();
                 if (ImGui::BeginCombo("##Invocationlocation", typeSelectedItem, ImGuiComboFlags_None)) {
                     for (int n = 0; n < IM_ARRAYSIZE(invocationDescription); n++) {
@@ -453,35 +453,35 @@ static void DisplayRenderTargets(AddonImGui::AddonUIData& instance,
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
 
-            ImGui::Text("Retry RT assignment");
+            ImGui::Text("重试RT分配");
             ImGui::TableNextColumn();
             ImGui::Checkbox("##RetryRTassignment", &retry);
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
 
-            ImGui::Text("Apply tone map clamping");
+            ImGui::Text("应用色调映射范围");
             ImGui::TableNextColumn();
             ImGui::Checkbox("##tonemap", &tonemap);
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
 
-            ImGui::Text("Flip render target");
+            ImGui::Text("翻转渲染目标");
             ImGui::TableNextColumn();
             ImGui::Checkbox("##flipbuffer", &flipbuffer);
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
 
-            ImGui::Text("Preserve target alpha channel");
+            ImGui::Text("保留目标 Alpha 通道");
             ImGui::TableNextColumn();
             ImGui::Checkbox("##preserveAlpha", &preserveAlpha);
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
 
-            ImGui::Text("Match swapchain");
+            ImGui::Text("匹配交换链");
             ImGui::TableNextColumn();
             if (ImGui::BeginCombo("##effSwapChainMatchMode", typesSelectedSwapchainMatchMode, ImGuiComboFlags_None)) {
                 for (int n = 0; n < IM_ARRAYSIZE(swapchainMatchOptions); n++) {
@@ -585,7 +585,7 @@ static void DisplayTextureBindings(AddonImGui::AddonUIData& instance,
     static float height = ImGui::GetWindowHeight();
     float width = ImGui::GetWindowWidth();
 
-    const char* typeItems[] = { "Render target", "Shader Resource View" };
+    const char* typeItems[] = { "渲染目标", "着色器资源视图" };
     uint32_t selectedIndex = group->getExtractResourceViews() ? 1 : 0;
     const char* typeSelectedItem = typeItems[selectedIndex];
     DeviceDataContainer& deviceData = runtime->get_device()->get_private_data<DeviceDataContainer>();
@@ -640,7 +640,7 @@ static void DisplayTextureBindings(AddonImGui::AddonUIData& instance,
             ImGui::TableNextRow();
 
             ImGui::TableNextColumn();
-            ImGui::Text("Texture source");
+            ImGui::Text("纹理源");
             ImGui::TableNextColumn();
             if (ImGui::BeginCombo("##Bindingsource", typeSelectedItem, ImGuiComboFlags_None)) {
                 for (int n = 0; n < IM_ARRAYSIZE(typeItems); n++) {
@@ -704,7 +704,7 @@ static void DisplayTextureBindings(AddonImGui::AddonUIData& instance,
                 }
 
                 ImGui::TableNextColumn();
-                ImGui::Text("Shader Stage");
+                ImGui::Text("着色器阶段");
                 ImGui::TableNextColumn();
                 if (ImGui::BeginCombo("##ShaderStage", selectedStage, ImGuiComboFlags_None)) {
                     for (int n = 0; n < IM_ARRAYSIZE(stageItems); n++) {
@@ -744,7 +744,7 @@ static void DisplayTextureBindings(AddonImGui::AddonUIData& instance,
                 ImGui::TableNextRow();
 
                 ImGui::TableNextColumn();
-                ImGui::Text("Binding");
+                ImGui::Text("绑定");
                 ImGui::TableNextColumn();
                 ImGui::Text("%u", group->getBindingSRVDescriptorIndex());
                 ImGui::SameLine();
@@ -774,7 +774,7 @@ static void DisplayTextureBindings(AddonImGui::AddonUIData& instance,
                 uint32_t rtSelectedIndex = group->getBindingInvocationLocation();
 
                 ImGui::TableNextColumn();
-                ImGui::Text("Render target index");
+                ImGui::Text("渲染目标索引");
                 ImGui::TableNextColumn();
                 ImGui::Text("%u", group->getBindingRenderTargetIndex());
                 ImGui::SameLine();
@@ -800,7 +800,7 @@ static void DisplayTextureBindings(AddonImGui::AddonUIData& instance,
                 }
 
                 ImGui::TableNextColumn();
-                ImGui::Text("Invocation location");
+                ImGui::Text("调用位置");
                 ImGui::TableNextColumn();
                 if (ImGui::BeginCombo("##Invocationlocation", rtTypeSelectedItem, ImGuiComboFlags_None)) {
                     for (int n = 0; n < IM_ARRAYSIZE(invocationDescription); n++) {
@@ -820,7 +820,7 @@ static void DisplayTextureBindings(AddonImGui::AddonUIData& instance,
                 }
 
                 ImGui::TableNextColumn();
-                ImGui::Text("Match swapchain");
+                ImGui::Text("匹配交换链");
                 ImGui::TableNextColumn();
                 if (ImGui::BeginCombo("##swapChainMatchMode", typesSelectedSwapchainMatchMode, ImGuiComboFlags_None)) {
                     for (int n = 0; n < IM_ARRAYSIZE(swapchainMatchOptions); n++) {
@@ -1049,10 +1049,10 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
         ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.5f);
         ImGui::SliderFloat("Overlay opacity", instance.OverlayOpacity(), 0.0f, 1.0f);
         ImGui::AlignTextToFramePadding();
-        ImGui::SliderInt("# of frames to collect", instance.StartValueFramecountCollectionPhase(), 10, 1000);
+        ImGui::SliderInt("# 要收集的帧数", instance.StartValueFramecountCollectionPhase(), 10, 1000);
         ImGui::SameLine();
-        ShowHelpMarker("This is the number of frames the addon will collect active shaders. Set this to a high number if the shader you want to mark is only "
-                       "used occasionally. Only shaders that are used in the frames collected can be marked.");
+        ShowHelpMarker("这是插件收集活动着色器的帧数。如果您想要标记的着色器仅在少数帧中出现，请将此值设置为一个较大的数字 "
+                       "偶尔使用。仅能标记在收集的帧中使用的着色器。");
         ImGui::PopItemWidth();
     }
     ImGui::Separator();
@@ -1138,14 +1138,14 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
             }
 
             ImGui::SameLine();
-            if (ImGui::Button("Edit")) {
+            if (ImGui::Button("编辑")) {
                 group.setEditing(true);
             }
 
             ImGui::SameLine();
             if (instance.GetToggleGroupIdShaderEditing() >= 0) {
                 if (instance.GetToggleGroupIdShaderEditing() == group.getId()) {
-                    if (ImGui::Button(" Done ")) {
+                    if (ImGui::Button(" 完成 ")) {
                         instance.EndShaderEditing(true, group);
                     }
                 } else {
@@ -1154,7 +1154,7 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
                     ImGui::EndDisabled();
                 }
             } else {
-                if (ImGui::Button("Settings")) {
+                if (ImGui::Button("设置")) {
                     ImGui::SameLine();
                     instance.StartShaderEditing(group);
                 }
@@ -1177,7 +1177,7 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
                 strncpy_s(tmpBuffer, 150, name.c_str(), name.size());
                 ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.7f);
                 ImGui::AlignTextToFramePadding();
-                ImGui::Text("Name");
+                ImGui::Text("名称");
                 ImGui::SameLine(ImGui::GetWindowWidth() * 0.2f);
                 ImGui::InputText("##Name", tmpBuffer, 149);
                 group.setName(tmpBuffer);
@@ -1186,7 +1186,7 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
                 // Key binding of group
                 ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.7f);
                 ImGui::AlignTextToFramePadding();
-                ImGui::Text("Key shortcut");
+                ImGui::Text("绑定快捷键");
                 ImGui::SameLine(ImGui::GetWindowWidth() * 0.2f);
 
                 uint32_t keys = group.getToggleKey();
