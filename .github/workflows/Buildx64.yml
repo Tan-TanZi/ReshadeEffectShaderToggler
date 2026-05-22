@@ -1,5 +1,5 @@
 # .github/workflows/msbuild.yml
-name: MSBuild2
+name: Buildx64
 
 on:
   push:
