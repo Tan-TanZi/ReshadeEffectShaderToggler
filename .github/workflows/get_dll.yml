@@ -23,7 +23,7 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      # 1. 构建 libMinHook（尝试常见路径）
+      # 1. 构建 libMinHook
       - name: Build libMinHook
         run: |
           if (Test-Path "deps/libMinHook/libMinHook.vcxproj") {
@@ -35,7 +35,7 @@ jobs:
             exit 1
           }
 
-      # 2. 搜索生成的 libMinHook.lib 并复制到主项目期望位置
+      # 2. 搜索 libMinHook.lib 并复制到主项目期望的位置（如果不同）
       - name: Copy libMinHook.lib to expected path
         run: |
           $foundLib = Get-ChildItem -Path . -Recurse -Filter "libMinHook.lib" | Select-Object -First 1
@@ -43,13 +43,20 @@ jobs:
             Write-Error "libMinHook.lib not found after build"
             exit 1
           }
-          Write-Host "Found lib at: $($foundLib.FullName)"
+          $source = $foundLib.FullName
           $destDir = "deps\libMinHook\x64\Release"
-          New-Item -ItemType Directory -Force -Path $destDir | Out-Null
-          Copy-Item -Path $foundLib.FullName -Destination $destDir -Force
-          Write-Host "Copied to $destDir"
+          $destFile = Join-Path $destDir "libMinHook.lib"
+          Write-Host "Source: $source"
+          Write-Host "Dest:   $destFile"
+          if ($source -eq $destFile) {
+            Write-Host "Source and destination are the same, skipping copy"
+          } else {
+            New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+            Copy-Item -Path $source -Destination $destDir -Force
+            Write-Host "Copied libMinHook.lib to $destDir"
+          }
 
-      # 3. 构建主项目（此时链接器可以找到 lib）
+      # 3. 构建主项目
       - name: Build main project (x64)
         run: |
           msbuild ${{ env.SOLUTION_PATH }} /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }}
@@ -59,7 +66,7 @@ jobs:
         run: |
           $addon = Get-ChildItem -Path . -Recurse -Filter "*.addon64" | Select-Object -First 1
           if (-not $addon) {
-            Write-Error "No .addon64 file found"
+            Write-Error "No .addon64 file found after build"
             exit 1
           }
           Copy-Item $addon.FullName -Destination "ReshadeEffectShaderToggler.addon64" -Force
