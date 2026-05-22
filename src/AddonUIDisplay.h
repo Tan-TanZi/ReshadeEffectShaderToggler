@@ -1006,25 +1006,42 @@ static void ShowHelpMarker(const char* desc) {
 static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::effect_runtime* runtime) {
     DisplayAbout();
 
+    // if (ImGui::CollapsingHeader("General info and help")) {
+    //     ImGui::PushTextWrapPos();
+    //     ImGui::TextUnformatted(
+    //       "The Shader Toggler allows you to create one or more groups with shaders to toggle on/off. You can assign a keyboard shortcut (including using keys "
+    //       "like Shift, Alt and Control) to each group, including a handy name. Each group can have one or more vertex or pixel shaders assigned to it. When "
+    //       "you press the assigned keyboard shortcut, any draw calls using these shaders will be disabled, effectively hiding the elements in the 3D scene.");
+    //     ImGui::TextUnformatted("\nThe following (hardcoded) keyboard shortcuts are used when you click a group's 'Change Shaders' button:");
+    //     ImGui::TextUnformatted("* Numpad 1 and Numpad 2: previous/next pixel shader");
+    //     ImGui::TextUnformatted("* Ctrl + Numpad 1 and Ctrl + Numpad 2: previous/next marked pixel shader in the group");
+    //     ImGui::TextUnformatted("* Numpad 3: mark/unmark the current pixel shader as being part of the group");
+    //     ImGui::TextUnformatted("* Numpad 4 and Numpad 5: previous/next vertex shader");
+    //     ImGui::TextUnformatted("* Ctrl + Numpad 4 and Ctrl + Numpad 5: previous/next marked vertex shader in the group");
+    //     ImGui::TextUnformatted("* Numpad 6: mark/unmark the current vertex shader as being part of the group");
+    //     ImGui::TextUnformatted(
+    //       "\nWhen you step through the shaders, the current shader is disabled in the 3D scene so you can see if that's the shader you were looking for.");
+    //     ImGui::TextUnformatted("When you're done, make sure you click 'Save all toggle groups' to preserve the groups you defined so next time you start your "
+    //                            "game they're loaded in and you can use them right away.");
+    //     ImGui::PopTextWrapPos();
+    // }
+
     if (ImGui::CollapsingHeader("General info and help")) {
         ImGui::PushTextWrapPos();
         ImGui::TextUnformatted(
-          "The Shader Toggler allows you to create one or more groups with shaders to toggle on/off. You can assign a keyboard shortcut (including using keys "
-          "like Shift, Alt and Control) to each group, including a handy name. Each group can have one or more vertex or pixel shaders assigned to it. When "
-          "you press the assigned keyboard shortcut, any draw calls using these shaders will be disabled, effectively hiding the elements in the 3D scene.");
-        ImGui::TextUnformatted("\nThe following (hardcoded) keyboard shortcuts are used when you click a group's 'Change Shaders' button:");
-        ImGui::TextUnformatted("* Numpad 1 and Numpad 2: previous/next pixel shader");
-        ImGui::TextUnformatted("* Ctrl + Numpad 1 and Ctrl + Numpad 2: previous/next marked pixel shader in the group");
-        ImGui::TextUnformatted("* Numpad 3: mark/unmark the current pixel shader as being part of the group");
-        ImGui::TextUnformatted("* Numpad 4 and Numpad 5: previous/next vertex shader");
-        ImGui::TextUnformatted("* Ctrl + Numpad 4 and Ctrl + Numpad 5: previous/next marked vertex shader in the group");
-        ImGui::TextUnformatted("* Numpad 6: mark/unmark the current vertex shader as being part of the group");
+          "着色器开关插件允许你创建一个或多个着色器分组，用于快速开启/关闭特效。你可以为每个分组设置快捷键（支持 Shift、Alt、Ctrl 组合键）和自定义名称。每个分组可绑定一个或多个顶点/像素着色器。按下分组快捷键时，使用这些着色器的画面渲染会被禁用，从而隐藏 3D 场景中的对应元素。");
+        ImGui::TextUnformatted("\n点击分组的「修改着色器」按钮后，将使用以下内置快捷键：");
+        ImGui::TextUnformatted("* 小键盘 1 / 小键盘 2：上一个 / 下一个像素着色器");
+        ImGui::TextUnformatted("* Ctrl + 小键盘 1 / Ctrl + 小键盘 2：分组内上一个 / 下一个已标记像素着色器");
+        ImGui::TextUnformatted("* 小键盘 3：将当前像素着色器标记/取消标记为分组成员");
+        ImGui::TextUnformatted("* 小键盘 4 / 小键盘 5：上一个 / 下一个顶点着色器");
+        ImGui::TextUnformatted("* Ctrl + 小键盘 4 / Ctrl + 小键盘 5：分组内上一个 / 下一个已标记顶点着色器");
+        ImGui::TextUnformatted("* 小键盘 6：将当前顶点着色器标记/取消标记为分组成员");
         ImGui::TextUnformatted(
-          "\nWhen you step through the shaders, the current shader is disabled in the 3D scene so you can see if that's the shader you were looking for.");
-        ImGui::TextUnformatted("When you're done, make sure you click 'Save all toggle groups' to preserve the groups you defined so next time you start your "
-                               "game they're loaded in and you can use them right away.");
+          "\n当你切换着色器时，当前着色器会在 3D 场景中临时禁用，方便你确认是否为目标着色器。");
+        ImGui::TextUnformatted("设置完成后，请务必点击「保存所有开关分组」，以便下次启动游戏时自动加载配置并直接使用。");
         ImGui::PopTextWrapPos();
-    }
+}
 
     ImGui::AlignTextToFramePadding();
     if (ImGui::CollapsingHeader("Shader selection parameters", ImGuiTreeNodeFlags_DefaultOpen)) {
