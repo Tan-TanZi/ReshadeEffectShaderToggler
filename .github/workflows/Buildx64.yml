@@ -1,23 +1,60 @@
-- name: Build x64
-  working-directory: src
-  run: msbuild /m /p:Platform=x64 /p:Configuration=${{env.BUILD_CONFIGURATION}} ReshadeEffectShaderToggler.sln
+# .github/workflows/msbuild.yml
+name: MSBuild2
 
-- name: List all DLLs (debug)
-  run: Get-ChildItem -Recurse -Filter *.dll | % { $_.FullName }
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:   # 允许手动触发
 
-- name: Copy DLL to root
-  run: |
-    $dll = Get-ChildItem -Recurse -Filter "ReshadeEffectShaderToggler.dll" | Select-Object -First 1
-    if ($dll) {
-        Copy-Item $dll.FullName -Destination . -Force
-        Write-Host "Copied $($dll.FullName) to root"
-    } else {
-        Write-Error "DLL not found!"
-        exit 1
-    }
+env:
+  BUILD_CONFIGURATION: Release
 
-- name: Upload compiled files
-  uses: actions/upload-artifact@v4
-  with:
-    name: CompiledAddons
-    path: ReshadeEffectShaderToggler.dll
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build x64 solution
+        working-directory: src
+        run: msbuild /m /p:Platform=x64 /p:Configuration=${{ env.BUILD_CONFIGURATION }} ReshadeEffectShaderToggler.sln
+
+      # 调试：列出所有生成的 .dll 文件及其完整路径
+      - name: List all DLLs
+        run: |
+          Write-Host "Searching for all .dll files in src directory..."
+          Get-ChildItem -Path src -Recurse -Filter *.dll | ForEach-Object {
+            Write-Host "Found: $($_.FullName)"
+          }
+
+      # 找到目标 DLL 并复制到工作区根目录
+      - name: Copy ReshadeEffectShaderToggler.dll to root
+        run: |
+          $dll = Get-ChildItem -Path src -Recurse -Filter "ReshadeEffectShaderToggler.dll" | Select-Object -First 1
+          if ($dll) {
+            Copy-Item -Path $dll.FullName -Destination . -Force
+            Write-Host "Successfully copied $($dll.FullName) to $env:GITHUB_WORKSPACE"
+          } else {
+            Write-Error "Could not find ReshadeEffectShaderToggler.dll after build!"
+            exit 1
+          }
+
+      # 上传为 artifact（你可以在 Actions 运行结果的页面下载它）
+      - name: Upload compiled DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: CompiledAddons
+          path: ReshadeEffectShaderToggler.dll
+          if-no-files-found: error   # 如果文件不存在则失败，避免静默上传空包
