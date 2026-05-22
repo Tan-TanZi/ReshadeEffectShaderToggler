@@ -1,11 +1,10 @@
 name: get_dll
-
 on:
   push:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
-  workflow_dispatch:   # 允许手动触发
+  workflow_dispatch:
 
 env:
   SOLUTION_PATH: src/ReshadeEffectShaderToggler.sln
@@ -24,49 +23,45 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      # 可选：确认项目配置为 DynamicLibrary（如果不是，编译将不会生成 DLL）
-      - name: Check project configuration type
+      # 1. 先单独构建 libMinHook 依赖库
+      - name: Build libMinHook (x64)
         run: |
-          $vcxproj = Get-ChildItem -Path src -Filter "*.vcxproj" -Recurse | Select-Object -First 1
-          if ($vcxproj) {
-            $content = Get-Content $vcxproj.FullName -Raw
-            if ($content -match '<ConfigurationType>([^<]+)</ConfigurationType>') {
-              Write-Host "Current ConfigurationType: $($matches[1])"
-              if ($matches[1] -ne 'DynamicLibrary') {
-                Write-Host "::warning::Project is not set to DynamicLibrary (found $($matches[1])). DLL may not be generated."
-              }
-            }
-          }
+          msbuild deps/libMinHook/libMinHook.vcxproj /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }}
 
-      - name: Build x64 (64-bit addon)
+      # 2. 将生成的 .lib 文件复制到主项目期望的位置
+      - name: Copy libMinHook.lib to expected path
         run: |
-          msbuild ${{ env.SOLUTION_PATH }} /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }} /p:OutDir=.\bin\x64\Release\
-
-      - name: Build x86 (32-bit addon) - optional
-        run: |
-          msbuild ${{ env.SOLUTION_PATH }} /m /p:Platform=x86 /p:Configuration=${{ env.CONFIGURATION }} /p:OutDir=.\bin\x86\Release\
-
-      - name: Locate and prepare addon files
-        run: |
-          # 查找所有 .dll 文件（通常名为 ReshadeEffectShaderToggler.dll）
-          $dlls = Get-ChildItem -Path . -Recurse -Filter "*.dll" | Where-Object { $_.Name -like "*ReshadeEffectShaderToggler*" -or $_.Name -like "*Rshield*" }
-          if ($dlls.Count -eq 0) {
-            Write-Error "No matching DLL found!"
+          $source = "deps\libMinHook\bin\x64\Release\libMinHook.lib"
+          $destDir = "deps\libMinHook\x64\Release"
+          if (Test-Path $source) {
+            New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+            Copy-Item -Path $source -Destination $destDir -Force
+            Write-Host "Successfully copied libMinHook.lib to $destDir"
+          } else {
+            Write-Error "libMinHook.lib not found at $source"
             exit 1
           }
-          foreach ($dll in $dlls) {
-            # 判断架构：路径包含 x64 或 Win32/x86
-            $arch = if ($dll.FullName -match "x64|X64") { "64" } elseif ($dll.FullName -match "x86|Win32|X86") { "32" } else { "" }
-            $destName = "ReshadeEffectShaderToggler.addon$arch"
-            Copy-Item $dll.FullName -Destination $destName -Force
-            Write-Host "Copied $($dll.FullName) -> $destName"
-          }
 
-      - name: Upload artifacts (addon files)
+      # 3. 构建主项目（此时链接器可以找到 libMinHook.lib）
+      - name: Build main project (x64)
+        run: |
+          msbuild ${{ env.SOLUTION_PATH }} /m /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }}
+
+      # 4. 查找生成的 .addon64 文件（主项目直接输出 .addon64）
+      - name: Locate and prepare addon file
+        run: |
+          $addon = Get-ChildItem -Path . -Recurse -Filter "*.addon64" | Select-Object -First 1
+          if (-not $addon) {
+            Write-Error "No .addon64 file found after build!"
+            exit 1
+          }
+          Copy-Item $addon.FullName -Destination "ReshadeEffectShaderToggler.addon64" -Force
+          Write-Host "Prepared addon: ReshadeEffectShaderToggler.addon64"
+
+      # 5. 上传最终产物
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ReShadeAddons
-          path: |
-            ReshadeEffectShaderToggler.addon64
-            ReshadeEffectShaderToggler.addon32
+          name: ReShadeAddon
+          path: ReshadeEffectShaderToggler.addon64
           if-no-files-found: error
