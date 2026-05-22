@@ -13,7 +13,6 @@ on:
   workflow_dispatch:
 
 env:
-  SOLUTION_FILE_PATH: src/ReshadeEffectShaderToggler.sln
   BUILD_CONFIGURATION: Release
 
 permissions:
@@ -32,12 +31,12 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Build x64
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /m /property:Platform=x64 /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
-      
+      working-directory: src
+      run: msbuild /m /property:Platform=x64 /p:Configuration=${{env.BUILD_CONFIGURATION}} ReshadeEffectShaderToggler.sln
+
     - name: Build x86
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /m /property:Platform=x86 /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+      working-directory: src
+      run: msbuild /m /property:Platform=x86 /p:Configuration=${{env.BUILD_CONFIGURATION}} ReshadeEffectShaderToggler.sln
 
     - name: Upload compiled files
       uses: actions/upload-artifact@v4
