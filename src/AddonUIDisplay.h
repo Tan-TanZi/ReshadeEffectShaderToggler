@@ -1029,27 +1029,27 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
     if (ImGui::CollapsingHeader("General info and help")) {
         ImGui::PushTextWrapPos();
         ImGui::TextUnformatted(
-          "着色器开关插件允许你创建一个或多个着色器分组，用于快速开启/关闭特效。你可以为每个分组设置快捷键（支持 Shift、Alt、Ctrl 组合键）和自定义名称。每个分组可绑定一个或多个顶点/像素着色器。按下分组快捷键时，使用这些着色器的画面渲染会被禁用，从而隐藏 3D 场景中的对应元素。");
-        ImGui::TextUnformatted("\n点击分组的「修改着色器」按钮后，将使用以下内置快捷键：");
-        ImGui::TextUnformatted("* 小键盘 1 / 小键盘 2：上一个 / 下一个像素着色器");
-        ImGui::TextUnformatted("* Ctrl + 小键盘 1 / Ctrl + 小键盘 2：分组内上一个 / 下一个已标记像素着色器");
-        ImGui::TextUnformatted("* 小键盘 3：将当前像素着色器标记/取消标记为分组成员");
-        ImGui::TextUnformatted("* 小键盘 4 / 小键盘 5：上一个 / 下一个顶点着色器");
-        ImGui::TextUnformatted("* Ctrl + 小键盘 4 / Ctrl + 小键盘 5：分组内上一个 / 下一个已标记顶点着色器");
-        ImGui::TextUnformatted("* 小键盘 6：将当前顶点着色器标记/取消标记为分组成员");
+          "着色器开关插件允许你创建一个或多个着色器分组，可对分组整体启用/禁用。你可为每个分组自定义键盘快捷键（支持 Shift、Alt、Ctrl 等组合键），并设置易识别的分组名称。每个分组可绑定一个或多个顶点着色器、像素着色器。按下对应快捷键后，所有使用该分组内着色器的绘制调用都会被禁用，实现隐藏 3D 场景中对应元素的效果。");
+        ImGui::TextUnformatted("\n点击分组的「修改着色器」按钮后，将启用以下固定快捷键：");
+        ImGui::TextUnformatted("* 小键盘1/2：上一个/下一个像素着色器");
+        ImGui::TextUnformatted("* Ctrl+小键盘1/2：上一个/下一个分组内已标记的像素着色器");
+        ImGui::TextUnformatted("* 小键盘3：标记/取消标记当前像素着色器分组成员");
+        ImGui::TextUnformatted("$ 小键盘4/5：上一个/下一个顶点着色器");
+        ImGui::TextUnformatted("$ Ctrl+小键盘4/5：上一个/下一个分组内已标记的顶点着色器");
+        ImGui::TextUnformatted("$ 小键盘6：标记/取消标记当前顶点着色器分组成员");
         ImGui::TextUnformatted(
-          "\n当你切换着色器时，当前着色器会在 3D 场景中临时禁用，方便你确认是否为目标着色器。");
-        ImGui::TextUnformatted("设置完成后，请务必点击「保存所有开关分组」，以便下次启动游戏时自动加载配置并直接使用。");
+          "\n当你按下快捷键遍历着色器时，当前选中的着色器会在 3D 场景中临时隐藏，方便你确认目标");
+        ImGui::TextUnformatted("配置完成后，请点击“保存所有切换分组”按钮！！！下次启动游戏时分组会自动加载，可直接使用，或者分享他人");
         ImGui::PopTextWrapPos();
 }
 
     ImGui::AlignTextToFramePadding();
-    if (ImGui::CollapsingHeader("Shader selection parameters", ImGuiTreeNodeFlags_DefaultOpen)) {
+    if (ImGui::CollapsingHeader("覆盖层不透明度", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::AlignTextToFramePadding();
         ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.5f);
         ImGui::SliderFloat("Overlay opacity", instance.OverlayOpacity(), 0.0f, 1.0f);
         ImGui::AlignTextToFramePadding();
-        ImGui::SliderInt("# 要收集的帧数", instance.StartValueFramecountCollectionPhase(), 10, 1000);
+        ImGui::SliderInt("# 采样帧数", instance.StartValueFramecountCollectionPhase(), 10, 1000);
         ImGui::SameLine();
         ShowHelpMarker("这是插件收集活动着色器的帧数。如果您想要标记的着色器仅在少数帧中出现，请将此值设置为一个较大的数字 "
                        "偶尔使用。仅能标记在收集的帧中使用的着色器。");
