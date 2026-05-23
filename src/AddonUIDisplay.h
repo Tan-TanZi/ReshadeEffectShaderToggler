@@ -619,7 +619,7 @@ static void DisplayTextureBindings(AddonImGui::AddonUIData& instance,
             ImGui::TableSetupColumn("##BindingColumnSetup", ImGuiTableColumnFlags_WidthFixed, ImGui::GetWindowWidth() / 3);
 
             ImGui::TableNextColumn();
-            ImGui::Text("Texture binding enabled");
+            ImGui::Text("启用纹理绑定");
             ImGui::TableNextColumn();
             ImGui::Checkbox("##Texturebindingenabled", &isBindingEnabled);
 
@@ -633,14 +633,14 @@ static void DisplayTextureBindings(AddonImGui::AddonUIData& instance,
             ImGui::TableNextRow();
 
             ImGui::TableNextColumn();
-            ImGui::Text("Texture semantic");
+            ImGui::Text("纹理语义");
             ImGui::TableNextColumn();
             ImGui::InputText("##BindingName", tmpBuffer, 149);
 
             ImGui::TableNextRow();
 
             ImGui::TableNextColumn();
-            ImGui::Text("纹理源");
+            ImGui::Text("纹理来源");
             ImGui::TableNextColumn();
             if (ImGui::BeginCombo("##Bindingsource", typeSelectedItem, ImGuiComboFlags_None)) {
                 for (int n = 0; n < IM_ARRAYSIZE(typeItems); n++) {
@@ -658,7 +658,7 @@ static void DisplayTextureBindings(AddonImGui::AddonUIData& instance,
             ImGui::TableNextRow();
 
             ImGui::TableNextColumn();
-            ImGui::Text("Create texture copy for binding");
+            ImGui::Text("为绑定创建纹理副本");
             ImGui::TableNextColumn();
             ImGui::Checkbox("##Copybinding", &copyBinding);
 
@@ -666,7 +666,7 @@ static void DisplayTextureBindings(AddonImGui::AddonUIData& instance,
 
             ImGui::BeginDisabled(!copyBinding);
             ImGui::TableNextColumn();
-            ImGui::Text("Flip binding texture");
+            ImGui::Text("翻转绑定纹理");
             ImGui::TableNextColumn();
             ImGui::Checkbox("##flipbinding", &flipBinding);
             ImGui::EndDisabled();
@@ -674,7 +674,7 @@ static void DisplayTextureBindings(AddonImGui::AddonUIData& instance,
             ImGui::TableNextRow();
 
             ImGui::TableNextColumn();
-            ImGui::Text("Clear binding on hash miss");
+            ImGui::Text("哈希值不匹配时清除绑定");
             ImGui::TableNextColumn();
             ImGui::Checkbox("##Clearbinding", &clearBinding);
 
