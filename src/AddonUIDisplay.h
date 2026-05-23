@@ -881,7 +881,7 @@ static void DisplayOverlay(AddonImGui::AddonUIData& instance, Rendering::Resourc
         static float height = ImGui::GetWindowHeight();
         static float width = ImGui::GetWindowWidth();
 
-        const char* typeItems[] = { "Pixel shader", "Vertex shader", "Compute Shader" };
+        const char* typeItems[] = { "像素着色器", "顶点着色器", "计算着色器" };
         static const char* typeSelectedItem = typeItems[0];
         static uint32_t selectedIndex = 0;
 
