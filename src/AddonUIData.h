@@ -61,11 +61,16 @@ enum Keybind : uint32_t {
     DESCRIPTOR_UP
 };
 
-static const char* KeybindNames[] = { "PIXEL_SHADER_DOWN",        "PIXEL_SHADER_UP",        "PIXEL_SHADER_MARK",
-                                      "PIXEL_SHADER_MARKED_DOWN", "PIXEL_SHADER_MARKED_UP", "VERTEX_SHADER_DOWN",
-                                      "VERTEX_SHADER_UP",         "VERTEX_SHADER_MARK",     "VERTEX_SHADER_MARKED_DOWN",
-                                      "VERTEX_SHADER_MARKED_UP",  "INVOCATION_DOWN",        "INVOCATION_UP",
-                                      "DESCRIPTOR_DOWN",          "DESCRIPTOR_UP" };
+// static const char* KeybindNames[] = { "PIXEL_SHADER_DOWN",        "PIXEL_SHADER_UP",        "PIXEL_SHADER_MARK",
+//                                       "PIXEL_SHADER_MARKED_DOWN", "PIXEL_SHADER_MARKED_UP", "VERTEX_SHADER_DOWN",
+//                                       "VERTEX_SHADER_UP",         "VERTEX_SHADER_MARK",     "VERTEX_SHADER_MARKED_DOWN",
+//                                       "VERTEX_SHADER_MARKED_UP",  "INVOCATION_DOWN",        "INVOCATION_UP",
+//                                       "DESCRIPTOR_DOWN",          "DESCRIPTOR_UP" };
+static const char* KeybindNames[] = { "像素着色器向后遍历",        "像素着色器往前遍历",        "标记像素着色器",
+                                      "向后遍历已标记像素着色器", "往前遍历已标记像素着色器", "顶点着色器向后遍历",
+                                      "顶点着色器往前遍历",         "标记顶点着色器",     "向后遍历已标记顶点着色器",
+                                      "往前遍历已标记顶点着色器",  "着色器调用实例向后遍历",        "着色器调用实例往前遍历",
+                                      "描述符向后遍历",          "描述符往前遍历" };
 
 enum TabType : uint32_t {
     TAB_NONE = 0,
