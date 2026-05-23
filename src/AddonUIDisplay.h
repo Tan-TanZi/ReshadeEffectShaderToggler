@@ -1024,10 +1024,10 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
 }
 
     ImGui::AlignTextToFramePadding();
-    if (ImGui::CollapsingHeader("覆盖层不透明度", ImGuiTreeNodeFlags_DefaultOpen)) {
+    if (ImGui::CollapsingHeader("Shader selection parameters", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::AlignTextToFramePadding();
         ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.5f);
-        ImGui::SliderFloat("Overlay opacity", instance.OverlayOpacity(), 0.0f, 1.0f);
+        ImGui::SliderFloat("盖层的不透明度", instance.OverlayOpacity(), 0.0f, 1.0f);
         ImGui::AlignTextToFramePadding();
         ImGui::SliderInt("# 采样帧数", instance.StartValueFramecountCollectionPhase(), 10, 1000);
         ImGui::SameLine();
