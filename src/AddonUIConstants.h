@@ -280,14 +280,14 @@ static void DisplayConstantTab(AddonImGui::AddonUIData& instance, ShaderToggler:
             ImGui::BeginDisabled();
         }
 
-        if (ImGui::Button("Add Variable Binding")) {
+        if (ImGui::Button("添加变量绑定")) {
             ImGui::OpenPopup("Add###const_variables");
         }
 
         ImGui::Separator();
 
         if (ImGui::BeginPopupModal("Add###const_variables", nullptr, ImGuiWindowFlags_AlwaysAutoResize) && instance.GetRESTVariables()->size() > 0) {
-            ImGui::Text("Add constant buffer offset to variable binding:");
+            ImGui::Text("为变量绑定添加常量缓冲区偏移量：");
 
             static int varSelectionIndex = 0;
             std::vector<std::string> varNames;
@@ -303,7 +303,7 @@ static void DisplayConstantTab(AddonImGui::AddonUIData& instance, ShaderToggler:
 
             static std::string varSelectedItem = filteredVars.size() > 0 ? filteredVars[0] : "";
 
-            if (ImGui::BeginCombo("Variable", varSelectedItem.c_str(), ImGuiComboFlags_None)) {
+            if (ImGui::BeginCombo("变量", varSelectedItem.c_str(), ImGuiComboFlags_None)) {
                 for (auto& v : filteredVars) {
                     bool is_selected = (varSelectedItem == v);
                     if (ImGui::Selectable(v.c_str(), is_selected)) {
@@ -317,7 +317,7 @@ static void DisplayConstantTab(AddonImGui::AddonUIData& instance, ShaderToggler:
 
             ImGui::Text("0x");
             ImGui::SameLine();
-            ImGui::InputText("Offset", offsetInputBuf, offsetInputBufSize, ImGuiInputTextFlags_CharsHexadecimal);
+            ImGui::InputText("偏移量", offsetInputBuf, offsetInputBufSize, ImGuiInputTextFlags_CharsHexadecimal);
 
             static bool prevValue = false;
 
@@ -334,14 +334,14 @@ static void DisplayConstantTab(AddonImGui::AddonUIData& instance, ShaderToggler:
             }
             ImGui::SetItemDefaultFocus();
             ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+            if (ImGui::Button("取消", ImVec2(120, 0))) {
                 ImGui::CloseCurrentPopup();
             }
 
             ImGui::EndPopup();
         }
 
-        const char* varColumns[] = { "Variable", "Offset", "Type", "Use Previous Value" };
+        const char* varColumns[] = { "变量", "偏移量", "Type", "使用上一次数值" };
         std::vector<std::string> removal;
 
         if (varMap.size() > 0 &&
