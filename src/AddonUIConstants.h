@@ -28,7 +28,7 @@ static const std::unordered_set<std::string> varExclusionSet({ "frametime",
 
 static void DisplayConstantSettings(ShaderToggler::ToggleGroup* group) {
     ImGui::TableNextColumn();
-    ImGui::Text("Slot");
+    ImGui::Text("插槽");
     ImGui::TableNextColumn();
     ImGui::Text("%u", group->getCBSlotIndex());
 
@@ -51,7 +51,7 @@ static void DisplayConstantSettings(ShaderToggler::ToggleGroup* group) {
     ImGui::TableNextRow();
 
     ImGui::TableNextColumn();
-    ImGui::Text("Binding");
+    ImGui::Text("绑定索引");
     ImGui::TableNextColumn();
     ImGui::Text("%u", group->getCBDescriptorIndex());
 
@@ -116,7 +116,7 @@ static void DisplayConstantTab(AddonImGui::AddonUIData& instance, ShaderToggler:
             ImGui::TableSetupColumn("##CBcolumnsetup", ImGuiTableColumnFlags_WidthFixed, ImGui::GetWindowWidth() / 3);
 
             ImGui::TableNextColumn();
-            ImGui::Text("Extract constant buffer");
+            ImGui::Text("提取常量缓冲区");
             ImGui::TableNextColumn();
             ImGui::Checkbox("##Extractconstantbuffer", &extractionEnabled);
 
@@ -128,7 +128,7 @@ static void DisplayConstantTab(AddonImGui::AddonUIData& instance, ShaderToggler:
             ImGui::TableNextRow();
 
             ImGui::TableNextColumn();
-            ImGui::Text("View mode");
+            ImGui::Text("查看模式");
             ImGui::TableNextColumn();
             if (ImGui::BeginCombo("##Viewmode", typeSelectedItem, ImGuiComboFlags_None)) {
                 for (int n = 0; n < IM_ARRAYSIZE(typeItems); n++) {
@@ -146,7 +146,7 @@ static void DisplayConstantTab(AddonImGui::AddonUIData& instance, ShaderToggler:
             ImGui::TableNextRow();
 
             ImGui::TableNextColumn();
-            ImGui::Text("Shader Stage");
+            ImGui::Text("着色器阶段");
             ImGui::TableNextColumn();
             if (ImGui::BeginCombo("##ShaderStage", selectedStage, ImGuiComboFlags_None)) {
                 for (int n = 0; n < IM_ARRAYSIZE(stageItems); n++) {
@@ -164,7 +164,7 @@ static void DisplayConstantTab(AddonImGui::AddonUIData& instance, ShaderToggler:
             ImGui::TableNextRow();
 
             ImGui::TableNextColumn();
-            ImGui::Text("Constant mode");
+            ImGui::Text("常量模式");
             ImGui::TableNextColumn();
             if (ImGui::BeginCombo("##CBmode", cbModeSelection, ImGuiComboFlags_None)) {
                 for (int n = 0; n < IM_ARRAYSIZE(cbModeItems); n++) {
