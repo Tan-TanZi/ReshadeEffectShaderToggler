@@ -1018,7 +1018,8 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
         ImGui::TextUnformatted("$ Ctrl+小键盘4/5：上一个/下一个分组内已标记的顶点着色器");
         ImGui::TextUnformatted("$ 小键盘6：标记/取消标记当前顶点着色器分组成员");
         ImGui::TextUnformatted(
-          "\n当你按下快捷键遍历着色器时，当前选中的着色器会在 3D 场景中临时隐藏，方便你确认目标");
+          "\n当你按下快捷键遍历着色器时，当前选中的着色器会在 3D 场景中临时隐藏，方便你确认目标；
+            \n【实则上面的方法已过时：点击配置，进入GUI界面，左边就是着色器，左单击“预览”，左双击加入组】");
         ImGui::TextUnformatted("配置完成后，请点击“保存所有分组”按钮！！！ 下次启动游戏时分组会自动加载，可直接使用，或者分享他人");
         ImGui::PopTextWrapPos();
 }
