@@ -219,7 +219,7 @@ static void DisplayPreview(AddonImGui::AddonUIData& instance,
         resManager.SetPongPreviewHandles(runtime->get_device(), nullptr, nullptr, &srv);
         bool clearAlpha = group->getClearPreviewAlpha();
 
-        ImGui::Text("Clear alpha channel");
+        ImGui::Text("清除 Alpha 通道");
         ImGui::SameLine();
         ImGui::Checkbox("##Clearalpha", &clearAlpha);
 
