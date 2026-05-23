@@ -1005,27 +1005,7 @@ static void ShowHelpMarker(const char* desc) {
 
 static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::effect_runtime* runtime) {
     DisplayAbout();
-
-    // if (ImGui::CollapsingHeader("General info and help")) {
-    //     ImGui::PushTextWrapPos();
-    //     ImGui::TextUnformatted(
-    //       "The Shader Toggler allows you to create one or more groups with shaders to toggle on/off. You can assign a keyboard shortcut (including using keys "
-    //       "like Shift, Alt and Control) to each group, including a handy name. Each group can have one or more vertex or pixel shaders assigned to it. When "
-    //       "you press the assigned keyboard shortcut, any draw calls using these shaders will be disabled, effectively hiding the elements in the 3D scene.");
-    //     ImGui::TextUnformatted("\nThe following (hardcoded) keyboard shortcuts are used when you click a group's 'Change Shaders' button:");
-    //     ImGui::TextUnformatted("* Numpad 1 and Numpad 2: previous/next pixel shader");
-    //     ImGui::TextUnformatted("* Ctrl + Numpad 1 and Ctrl + Numpad 2: previous/next marked pixel shader in the group");
-    //     ImGui::TextUnformatted("* Numpad 3: mark/unmark the current pixel shader as being part of the group");
-    //     ImGui::TextUnformatted("* Numpad 4 and Numpad 5: previous/next vertex shader");
-    //     ImGui::TextUnformatted("* Ctrl + Numpad 4 and Ctrl + Numpad 5: previous/next marked vertex shader in the group");
-    //     ImGui::TextUnformatted("* Numpad 6: mark/unmark the current vertex shader as being part of the group");
-    //     ImGui::TextUnformatted(
-    //       "\nWhen you step through the shaders, the current shader is disabled in the 3D scene so you can see if that's the shader you were looking for.");
-    //     ImGui::TextUnformatted("When you're done, make sure you click 'Save all toggle groups' to preserve the groups you defined so next time you start your "
-    //                            "game they're loaded in and you can use them right away.");
-    //     ImGui::PopTextWrapPos();
-    // }
-
+    
     if (ImGui::CollapsingHeader("General info and help")) {
         ImGui::PushTextWrapPos();
         ImGui::TextUnformatted(
@@ -1060,7 +1040,7 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
     if (ImGui::CollapsingHeader("Options", ImGuiTreeNodeFlags_None)) {
         ImGui::AlignTextToFramePadding();
         std::string varSelectedItem = instance.GetResourceShim();
-        if (ImGui::BeginCombo("Resource Shim", varSelectedItem.c_str(), ImGuiComboFlags_None)) {
+        if (ImGui::BeginCombo("资源适配层", varSelectedItem.c_str(), ImGuiComboFlags_None)) {
             for (auto& v : Rendering::ResourceShimNames) {
                 bool is_selected = (varSelectedItem == v);
                 if (ImGui::Selectable(v.c_str(), is_selected)) {
@@ -1075,7 +1055,7 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
 
         ImGui::AlignTextToFramePadding();
         std::string varSelectedCopyMethod = instance.GetConstHookCopyType();
-        if (ImGui::BeginCombo("Constant buffer copy method", varSelectedCopyMethod.c_str(), ImGuiComboFlags_None)) {
+        if (ImGui::BeginCombo("常量缓冲区复制方式", varSelectedCopyMethod.c_str(), ImGuiComboFlags_None)) {
             for (auto& v : Shim::Constants::ConstantCopyTypeNames) {
                 bool is_selected = (varSelectedCopyMethod == v);
                 if (ImGui::Selectable(v.c_str(), is_selected)) {
@@ -1090,11 +1070,11 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
 
         ImGui::AlignTextToFramePadding();
         bool trackDescriptors = instance.GetTrackDescriptors();
-        ImGui::Checkbox("Track descriptors", &trackDescriptors);
+        ImGui::Checkbox("跟踪描述符", &trackDescriptors);
         instance.SetTrackDescriptors(trackDescriptors);
 
         bool runtimeReload = instance.GetPreventRuntimeReload();
-        ImGui::Checkbox("Prevent runtime reload", &runtimeReload);
+        ImGui::Checkbox("禁止运行时重载", &runtimeReload);
         instance.SetPreventRuntimeReload(runtimeReload);
     }
 
@@ -1110,7 +1090,7 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
     }
 
     if (ImGui::CollapsingHeader("List of Toggle Groups", ImGuiTreeNodeFlags_DefaultOpen)) {
-        if (ImGui::Button(" New ")) {
+        if (ImGui::Button(" 新建 ")) {
             instance.AddDefaultGroup();
         }
         ImGui::Separator();
@@ -1138,7 +1118,7 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
             }
 
             ImGui::SameLine();
-            if (ImGui::Button("编辑")) {
+            if (ImGui::Button("编辑属性")) {
                 group.setEditing(true);
             }
 
@@ -1154,7 +1134,7 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
                     ImGui::EndDisabled();
                 }
             } else {
-                if (ImGui::Button("设置")) {
+                if (ImGui::Button("打开配置")) {
                     ImGui::SameLine();
                     instance.StartShaderEditing(group);
                 }
