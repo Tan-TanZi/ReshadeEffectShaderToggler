@@ -434,7 +434,7 @@ static void DisplayRenderTargets(AddonImGui::AddonUIData& instance,
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
 
-                ImGui::Text("调用位置");
+                ImGui::Text("调用时机");
                 ImGui::TableNextColumn();
                 if (ImGui::BeginCombo("##Invocationlocation", typeSelectedItem, ImGuiComboFlags_None)) {
                     for (int n = 0; n < IM_ARRAYSIZE(invocationDescription); n++) {
@@ -453,14 +453,14 @@ static void DisplayRenderTargets(AddonImGui::AddonUIData& instance,
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
 
-            ImGui::Text("重试RT分配");
+            ImGui::Text("重试渲染目标分配");
             ImGui::TableNextColumn();
             ImGui::Checkbox("##RetryRTassignment", &retry);
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
 
-            ImGui::Text("应用色调映射范围");
+            ImGui::Text("应用色调映射钳位");
             ImGui::TableNextColumn();
             ImGui::Checkbox("##tonemap", &tonemap);
 
