@@ -110,7 +110,7 @@ static void DisplayTechniqueSelection(reshade::api::effect_runtime* runtime,
         ImGui::TableSetupColumn("##columnsetup", ImGuiTableColumnFlags_WidthFixed, tblWidth);
 
         ImGui::TableNextColumn();
-        ImGui::Text("Apply all enabled techniques");
+        ImGui::Text("应用所有启用的特效技术");
         ImGui::TableNextColumn();
         ImGui::Checkbox("##Catchalltechniques", &allowAll);
 
@@ -118,7 +118,7 @@ static void DisplayTechniqueSelection(reshade::api::effect_runtime* runtime,
 
         if (allowAll) {
             ImGui::TableNextColumn();
-            ImGui::Text("Except for selected techniques");
+            ImGui::Text("排除选中的特效技术");
             ImGui::TableNextColumn();
             ImGui::Checkbox("##Exceptfor", &exceptions);
 
@@ -126,14 +126,14 @@ static void DisplayTechniqueSelection(reshade::api::effect_runtime* runtime,
         }
 
         ImGui::TableNextColumn();
-        ImGui::Text("Search");
+        ImGui::Text("搜索");
         ImGui::TableNextColumn();
         ImGui::InputText("##techniqueSearch", searchBuf, 256, ImGuiInputTextFlags_None);
 
         ImGui::TableNextRow();
 
         ImGui::TableNextColumn();
-        if (ImGui::Button("Untick all")) {
+        if (ImGui::Button("全部取消勾选")) {
             curTechniques.clear();
         }
         ImGui::TableNextColumn();
