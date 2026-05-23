@@ -1019,7 +1019,7 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
         ImGui::TextUnformatted("$ 小键盘6：标记/取消标记当前顶点着色器分组成员");
         ImGui::TextUnformatted(
           "\n当你按下快捷键遍历着色器时，当前选中的着色器会在 3D 场景中临时隐藏，方便你确认目标");
-        ImGui::TextUnformatted("配置完成后，请点击“保存所有切换分组”按钮！！！下次启动游戏时分组会自动加载，可直接使用，或者分享他人");
+        ImGui::TextUnformatted("配置完成后，请点击“保存所有分组”按钮！！！ 下次启动游戏时分组会自动加载，可直接使用，或者分享他人");
         ImGui::PopTextWrapPos();
 }
 
@@ -1202,7 +1202,7 @@ static void DisplaySettings(AddonImGui::AddonUIData& instance, reshade::api::eff
 
         ImGui::Separator();
         if (instance.GetToggleGroups().size() > 0) {
-            if (ImGui::Button("Save all Toggle Groups")) {
+            if (ImGui::Button("保存所有分组")) {
                 instance.SaveShaderTogglerIniFile();
             }
         }
